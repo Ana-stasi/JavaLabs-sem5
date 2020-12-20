@@ -1,4 +1,4 @@
-package model.entity;
+package lab3.model.entity;
 
 import java.util.Date;
 import java.util.UUID;
@@ -7,8 +7,8 @@ public class Order{
     private UUID id;
     private UUID userId;
     private String username;
-    private double price;
-    private String status;
+    private double price = 0;
+    private String status = "registered";
     private Date cteatedAt;
 
     public Order(UUID id, UUID userId,String username, double price, String status, Date cteatedAt) {
@@ -20,19 +20,23 @@ public class Order{
         this.cteatedAt = cteatedAt;
     }
 
-    public Order(UUID orderId,UUID userId, double price, String status) {
-        this.id = orderId;
-        this.userId = userId;
-        this.price = price;
-        this.status = status;
-    }
-
     public Order(UUID orderId,UUID userId,double price, String status, Date cteatedAt) {
         this.id = orderId;
         this.userId = userId;
         this.price = price;
         this.status = status;
         this.cteatedAt = cteatedAt;
+    }
+
+    public Order(UUID orderId, UUID userId) {
+        this.id = orderId;
+        this.userId = userId;
+    }
+
+    public Order(UUID orderId, UUID userId, double price) {
+        this.id = orderId;
+        this.userId = userId;
+        this.price = price;
     }
 
     public UUID getId() {
@@ -51,13 +55,15 @@ public class Order{
         return status;
     }
     public int getStatusId(){
-        if(this.status.equals("registered")) return 1;
-        else return 0;
+        if(this.status.equals("canceled")) return 3;
+        else if(this.status.equals("paid")) return 2;
+        else return 1;
     }
 
-
-    public Date getCteatedAt() {
-        return cteatedAt;
+    public void setStatusId(int statusId) {
+        if (statusId == 1) this.status = "registered";
+        else if(statusId == 2) this.status = "paid";
+        else this.status ="canceled";
     }
 
     @Override

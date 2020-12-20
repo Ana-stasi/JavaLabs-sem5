@@ -1,8 +1,8 @@
-package view.page;
+package lab3.view.page;
 
-import exceptions.*;
-import model.entity.UserSession;
-import view.Validator;
+import lab3.controller.exceptions.*;
+import lab3.model.entity.UserSession;
+import lab3.view.Validator;
 
 public class UnauthorizedUserPage extends PageView {
 

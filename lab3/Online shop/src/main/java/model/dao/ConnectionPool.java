@@ -1,9 +1,8 @@
-package model.dao;
+package lab3.model.dao;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import javax.naming.ldap.LdapContext;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;

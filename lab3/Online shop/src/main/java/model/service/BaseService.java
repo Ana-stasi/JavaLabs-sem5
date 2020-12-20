@@ -1,15 +1,14 @@
-package model.service;
+package lab3.model.service;
 
-import model.dao.DAOFactory;
+import lab3.model.dao.DAOFactory;
 
 import java.sql.SQLException;
 
-public abstract class BaseService<M, T> {
+public abstract class BaseService {
     protected DAOFactory daoFactory;
 
     BaseService() {
         daoFactory = DAOFactory.getDaoFactory();
     }
 
-    public abstract M performAction(T entity) throws SQLException;
 }

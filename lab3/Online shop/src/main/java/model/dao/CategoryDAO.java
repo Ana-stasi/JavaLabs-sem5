@@ -1,13 +1,14 @@
-package model.dao;
+package lab3.model.dao;
 
-import model.entity.Category;
+import lab3.model.entity.Category;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CategoryDAO extends BaseDAO<Integer, Category> {
+public class CategoryDAO extends AbstractDAO<Integer, Category> {
      static final String findAllCategory ="select * from category";
     CategoryDAO() throws SQLException {
         connection = connectionPool.getConnection();
@@ -35,7 +36,22 @@ public class CategoryDAO extends BaseDAO<Integer, Category> {
 
     @Override
     public Category findEntityById(Integer id) {
-        return null;
+        String findCategoryById = "select * from category where category_id = ?";
+        Category category = null;
+        try (PreparedStatement ps = connection.prepareStatement(findCategoryById)) {
+            ps.setInt(1, id);
+            try(ResultSet resultSet = ps.executeQuery()) {
+                while (resultSet.next()) {
+                    category = new Category(
+                            resultSet.getInt("category_id"),
+                            resultSet.getString("category_name")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return category;
     }
 
     @Override
@@ -44,8 +60,8 @@ public class CategoryDAO extends BaseDAO<Integer, Category> {
     }
 
     @Override
-    public void delete(Integer id) {
-
+    public boolean delete(Integer id) {
+return true;
     }
 
     @Override
@@ -55,10 +71,10 @@ public class CategoryDAO extends BaseDAO<Integer, Category> {
 
     @Override
     public void create(Category entity){
-
     }
 
     @Override
     public void update(Category entity) {
+
     }
 }

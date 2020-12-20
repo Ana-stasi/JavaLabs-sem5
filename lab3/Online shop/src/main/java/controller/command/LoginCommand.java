@@ -1,33 +1,41 @@
-package controller.command;
+package lab3.controller.command;
 
-import exceptions.BlockedUserException;
-import exceptions.InvalidTypeException;
-import exceptions.NoSuchUserException;
-import exceptions.WrongPasswordException;
-import model.dto.LoginDTO;
-import model.entity.User;
-import model.service.BaseService;
-import view.page.PageView;
+import lab3.controller.exceptions.BlockedUserException;
+import lab3.view.page.PageView;
+import lab3.controller.exceptions.InvalidTypeException;
+import lab3.controller.exceptions.NoSuchUserException;
+import lab3.controller.exceptions.WrongPasswordException;
+import lab3.model.dto.LoginDTO;
+import lab3.model.service.LoginService;
+
 
 import java.sql.SQLException;
 
-public class LoginCommand extends FrontCommand{
+public class LoginCommand extends FrontCommand {
 
-   public LoginCommand(PageView view,String request){
-        super(view,request);
+    private LoginService service;
+
+    public LoginCommand(PageView view) {
+        super(view);
+        this.service = new LoginService();
     }
 
     @Override
-    public void execute()throws BlockedUserException {
-        BaseService<String,LoginDTO> service = serviceFactory.createService(request);
-        String username = view.getUsername();
-        String password = view.getRequest("Password -> ");
+    public void execute() throws BlockedUserException {
+
         try {
-            view.printMessage(service.performAction(new LoginDTO(username,password)) );
-        }catch (NoSuchUserException| WrongPasswordException| InvalidTypeException e){
+            LoginDTO user = getLoginDTO();
+            view.printMessage(service.login(user));
+        } catch (NoSuchUserException | WrongPasswordException | InvalidTypeException e) {
             view.printErrorMessage(e.getMessage());
-        }catch (SQLException e){
+        } catch (SQLException e) {
             view.printErrorMessage(view.SYSTEM_ERROR);
         }
+    }
+
+    private LoginDTO getLoginDTO() {
+        String username = view.getUsername();
+        String password = view.getRequest("Password -> ");
+        return new LoginDTO(username, password);
     }
 }

@@ -1,9 +1,7 @@
-package view.page;
-
-import java.util.ArrayList;
+package lab3.view.page;
 
 public interface Printer {
-     String SYSTEM_ERROR = "Sorry, something went wrong." +
+    String SYSTEM_ERROR = "Sorry, something went wrong." +
             "We're working on getting this fixed as soon as we can.";
     void showMenu();
     default void printMessage(String message) {
@@ -13,6 +11,4 @@ public interface Printer {
     default void printErrorMessage(String errorMessage) {
         System.err.println(errorMessage);
     }
-
-
 }

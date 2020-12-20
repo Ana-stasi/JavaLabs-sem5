@@ -1,6 +1,6 @@
-package view;
+package lab3.view;
 
-import exceptions.*;
+import lab3.controller.exceptions.*;
 
 public class Validator {
 
@@ -22,9 +22,9 @@ public class Validator {
         if (!email.matches("^([a-z0-9_-]+\\.)*[a-z0-9_-]+@[a-z0-9_-]+(\\.[a-z0-9_-]+)*\\.[a-z]{2,6}$"))
             throw new UnsupportedEmailException();
     }
-    public static void checkMenuItem(String sortType,int max){
-        if(sortType.matches("\\d+")){
-            int type = Integer.parseInt(sortType);
+    public static void checkMenuItem(String request,int max){
+        if(request.matches("\\d+")){
+            int type = Integer.parseInt(request);
             if(type > max || type < 1) throw new WrongMenuItemException();;
         }else throw new WrongInputException();
     }

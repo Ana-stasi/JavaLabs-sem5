@@ -1,34 +1,34 @@
-package controller.command;
+package lab3.controller.command;
 
-import exceptions.InvalidTypeException;
-import model.entity.Order;
-import model.entity.User;
-import model.entity.UserSession;
-import model.service.BaseService;
-import view.page.PageView;
+import lab3.controller.exceptions.InvalidTypeException;
+import lab3.model.entity.Order;
+import lab3.model.entity.UserSession;
+import lab3.model.service.OrderService;
+import lab3.model.service.exceptions.NoOrderException;
+import lab3.view.page.PageView;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
 public class ShowOrdersCommand extends FrontCommand {
-    public ShowOrdersCommand(PageView view, String request) {
-        super(view, request);
+    private OrderService service;
+
+    public ShowOrdersCommand(PageView view) {
+        super(view);
+        this.service = new OrderService();
     }
 
     @Override
-   public void execute() {
-
+    public void execute() {
         try {
-            BaseService<List<Order>, UUID> service = serviceFactory.createService(request);
-            List<Order> orders = service.performAction(UserSession.getUserSession().getUserId()) ;
-            if(orders == null) view.printMessage("You haven't made any order");
-           else view.printData(orders,view.orderColumns);
-        }catch ( InvalidTypeException e) {
+            UUID userId = UserSession.getUserSession().getUserId();
+            List<Order> orders = service.getOrders(userId);
+            view.printData(orders, view.orderColumns);
+        } catch (InvalidTypeException | NoOrderException e) {
             view.printErrorMessage(e.getMessage());
-        }catch (SQLException e){
+        } catch (SQLException e) {
             view.printErrorMessage(view.SYSTEM_ERROR);
         }
-
     }
 }

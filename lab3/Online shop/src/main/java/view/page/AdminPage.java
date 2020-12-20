@@ -1,9 +1,9 @@
-package view.page;
+package lab3.view.page;
 
-import exceptions.WrongInputException;
-import exceptions.WrongMenuItemException;
-import model.entity.UserSession;
-import view.Validator;
+import lab3.controller.exceptions.WrongInputException;
+import lab3.controller.exceptions.WrongMenuItemException;
+import lab3.model.entity.UserSession;
+import lab3.view.Validator;
 
 public class AdminPage extends PageView {
 
@@ -21,19 +21,6 @@ public class AdminPage extends PageView {
     }
 
     @Override
-    public int getValueByItem(String request,int max) {
-        String value;
-        while (true) {
-            value = getRequest(request);
-            try {
-                Validator.checkMenuItem(value,max);
-                break;
-            }catch (WrongInputException| WrongMenuItemException e ) {
-                printErrorMessage(e.getMessage());
-            }
-        } return Integer.parseInt(value);
-    }
-    @Override
     public String getBlockRequest() {
         String blockRequest;
         while (true) {
@@ -45,5 +32,17 @@ public class AdminPage extends PageView {
                 printErrorMessage(e.getMessage());
             }
         } return blockRequest;
+    }
+    public int getOrderStatus() {
+        String orderStatusRequest;
+        while (true) {
+            orderStatusRequest = getRequest(" 1.registered \n 2.paid \n 3.canceled\n Select option ->  ");
+            try {
+                Validator.checkMenuItem(orderStatusRequest,3);
+                break;
+            } catch (WrongMenuItemException e) {
+                printErrorMessage(e.getMessage());
+            }
+        } return Integer.parseInt(orderStatusRequest);
     }
 }

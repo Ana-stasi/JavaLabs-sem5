@@ -1,25 +1,20 @@
-package model.service;
+package lab3.model.service;
 
-import exceptions.BlockedUserException;
-import exceptions.NoSuchUserException;
-import exceptions.WrongPasswordException;
-import model.dao.BaseDAO;
-import model.dto.LoginDTO;
-import model.entity.User;
-import model.entity.UserSession;
+import lab3.controller.exceptions.BlockedUserException;
+import lab3.controller.exceptions.NoSuchUserException;
+import lab3.controller.exceptions.WrongPasswordException;
+import lab3.model.dao.AbstractDAO;
+import lab3.model.dto.LoginDTO;
+import lab3.model.entity.User;
+import lab3.model.entity.UserSession;
 
 import java.sql.SQLException;
 import java.util.UUID;
 
-public class LoginService extends BaseService<String, LoginDTO> {
+public class LoginService extends BaseService {
 
-    LoginService() {
-    }
-
-    public String performAction(LoginDTO unauthorizedUser) throws NoSuchUserException, WrongPasswordException, SQLException {
-        BaseDAO<UUID, User> dao = null;
-
-            dao = daoFactory.createDAO("user");
+    public String login(LoginDTO unauthorizedUser) throws NoSuchUserException, WrongPasswordException, SQLException {
+        AbstractDAO<UUID, User> dao = daoFactory.createDAO("user");
             User user = dao.findEntityByName(unauthorizedUser.getUsername());
             if (user == null) {
                 throw new NoSuchUserException();
@@ -29,7 +24,7 @@ public class LoginService extends BaseService<String, LoginDTO> {
                 else {
                     if(!user.isEnable()) throw new BlockedUserException();
                     else UserSession.setUserSession(user.getId(), user.getUsername(), user.getUserRole(), user.isEnable());
-                    dao.close();
+                    dao.closeConnection();
                 }
             }
         return "\nWelcome, " + UserSession.getUserSession().getUsername();

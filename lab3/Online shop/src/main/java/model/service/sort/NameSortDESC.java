@@ -1,6 +1,6 @@
-package model.service.sort;
+package lab3.model.service.sort;
 
-import model.entity.Product;
+import lab3.model.entity.Product;
 
 import java.util.*;
 

@@ -1,6 +1,6 @@
-package view.page;
+package lab3.view.page;
 
-import model.entity.UserSession;
+import lab3.model.entity.UserSession;
 
 public class UserPage extends PageView {
     @Override

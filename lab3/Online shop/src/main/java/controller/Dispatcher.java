@@ -1,36 +1,40 @@
-package controller;
+package lab3.controller;
 
-import controller.command.*;
-import exceptions.WrongMenuItemException;
-import model.entity.UserSession;
-import view.page.PageView;
+
+import lab3.controller.command.*;
+import lab3.controller.exceptions.WrongMenuItemException;
+import lab3.model.entity.UserSession;
+import lab3.view.page.PageView;
 
 class Dispatcher {
     void executeCommand(String request, PageView view)  {
         switch (request) {
             case "login":
-               new LoginCommand(view,request).execute();
+               new LoginCommand(view).execute();
                 break;
             case "sign up":
-                new SignUpCommand(view,request).execute();
+                new RegistrationCommand(view).execute();
                 break;
             case "view catalogue":
-                new ShowCatalogueCommand(view,request).execute();
+                new ShowCatalogueCommand(view).execute();
                 break;
             case"view orders":
-                new ShowOrdersCommand(view,request).execute();
+                new ShowOrdersCommand(view).execute();
                 break;
             case"add product":
-                new AddProductCommand(view,request).execute();
+                new AddProductCommand(view).execute();
                 break;
             case"delete product":
-                new DeleteProductCommand(view,request).execute();
+                new DeleteProductCommand(view).execute();
                 break;
             case"block/unblock user":
-                new EditUserStatusCommand(view,request).execute();
+                new EditUserStatusCommand(view).execute();
                 break;
             case"edit product":
-                new EditProductCommand(view, request).execute();
+                new EditProductCommand(view).execute();
+                break;
+            case "edit order status":
+                new EditOrderStatusCommand(view).execute();
                 break;
             case"log out":
                 UserSession.getUserSession().setRole("guest");

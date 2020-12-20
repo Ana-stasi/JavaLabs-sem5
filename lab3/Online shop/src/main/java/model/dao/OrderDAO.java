@@ -1,16 +1,13 @@
-package model.dao;
+package lab3.model.dao;
 
-import model.entity.Order;
+import lab3.model.entity.Order;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-class OrderDAO extends BaseDAO<UUID, Order> {
+class OrderDAO extends AbstractDAO<UUID, Order> {
 
     public OrderDAO() throws SQLException {
         connection = connectionPool.getConnection();
@@ -18,7 +15,25 @@ class OrderDAO extends BaseDAO<UUID, Order> {
 
     @Override
     public List<Order> findAll() {
-        return null;
+        String findAllOrders = " select order_id,u.user_id,username,price, status_name,created_at from orders o\n" +
+                "inner join users u on o.user_id = u.user_id\n" +
+                "inner join order_status os on os.status_id = o.status_id\n";
+        List<Order> orders = new ArrayList<>();
+            try(ResultSet resultSet = connection.createStatement().executeQuery(findAllOrders)) {
+                while (resultSet.next()) {
+                    orders.add(new Order(
+                            UUID.fromString(resultSet.getString("order_id")),
+                            UUID.fromString(resultSet.getString("user_id")),
+                            resultSet.getString("username"),
+                            resultSet.getDouble("price"),
+                            resultSet.getString("status_name"),
+                            resultSet.getDate("created_at")
+                    ));
+                }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return orders;
     }
 
     @Override
@@ -79,8 +94,15 @@ class OrderDAO extends BaseDAO<UUID, Order> {
     }
 
     @Override
-    public void delete(UUID id) {
-
+    public boolean delete(UUID id) {
+        boolean result = false;
+        String deleteById = "delete from product where product_id = ?" ;
+        try (PreparedStatement ps = connection.prepareStatement(deleteById)) {
+            ps.setObject(1, id, java.sql.Types.OTHER);
+            result = ps.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }return result;
     }
 
     @Override
@@ -92,6 +114,7 @@ class OrderDAO extends BaseDAO<UUID, Order> {
     public void create(Order entity) {
         String insertOrder = "insert into orders(order_id,user_id,price,status_id,created_at) " +
                 "values(?,?,?,?,?)";
+
         if (findEntityById(entity.getId()) == null) {
             try (PreparedStatement ps = connection.prepareStatement(insertOrder)) {
                 ps.setObject(1, entity.getId(), java.sql.Types.OTHER);
@@ -103,20 +126,19 @@ class OrderDAO extends BaseDAO<UUID, Order> {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-        } else update(entity);
+        }else update(entity);
     }
 
     @Override
-    public void update(Order entity) {
-        String updateOrder = "update orders set order_id=?,user_id=?, price=?, status=?, created_at=? " +
+    public void update(Order order) {
+        String updateOrder = "update orders set user_id=?, price=?, status_id=?, created_at=? " +
                               "where order_id =?";
         try (PreparedStatement ps = connection.prepareStatement(updateOrder)) {
-            ps.setObject(1, entity.getId(), java.sql.Types.OTHER);
-            ps.setObject(2, entity.getUserId(), java.sql.Types.OTHER);
-            ps.setDouble(3, entity.getPrice());
-            ps.setInt(4, entity.getStatusId());
-            ps.setDate(5, new Date(new java.util.Date().getTime()));
-            ps.setObject(6, entity.getId(), java.sql.Types.OTHER);
+            ps.setObject(1, order.getUserId(), java.sql.Types.OTHER);
+            ps.setFloat(2, (float) order.getPrice());
+            ps.setInt(3,  order.getStatusId());
+            ps.setDate(4, new Date(new java.util.Date().getTime()));
+            ps.setObject(5, order.getId(), java.sql.Types.OTHER);
             ps.execute();
         } catch (SQLException e) {
             e.printStackTrace();

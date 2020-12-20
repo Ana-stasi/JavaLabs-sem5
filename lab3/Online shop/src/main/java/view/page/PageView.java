@@ -1,13 +1,13 @@
-package view.page;
+package lab3.view.page;
 
-import exceptions.WrongInputException;
-import exceptions.WrongMenuItemException;
-import view.Validator;
+import lab3.controller.exceptions.WrongInputException;
+import lab3.controller.exceptions.WrongMenuItemException;
+import lab3.view.Validator;
 
 import java.util.List;
 import java.util.Scanner;
 
-public abstract class PageView implements Printer, InputReader{
+public abstract class PageView implements Printer,  InputReader{
     public  final String userColumns = String.format("%15s |%35s | %10s", "username","email","status\n");
     public final String catalogueColumns = String.format("%3s |%20s | %30s | %2s\t | %15s | %2s\t | %10s\n",
             "№","category","name","price","color","weight","date added");

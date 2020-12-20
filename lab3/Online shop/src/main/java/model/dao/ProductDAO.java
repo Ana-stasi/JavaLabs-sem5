@@ -1,8 +1,8 @@
-package model.dao;
+package lab3.model.dao;
 
-import model.entity.Category;
-import model.entity.Color;
-import model.entity.Product;
+import lab3.model.entity.Category;
+import lab3.model.entity.Color;
+import lab3.model.entity.Product;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -11,13 +11,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProductDAO extends BaseDAO<Integer, Product> {
+public class ProductDAO extends AbstractDAO<Integer, Product> {
     public static final String findAllProducts = "select * from product pr " +
             "inner join category c on pr.category_id = c.category_id " +
             "inner join color c2 on pr.color_id = c2.color_id";
     public static final String insertProduct = "insert into product(category_id,product_name," +
             "price,color_id,weight,date_added) values(?,?,?,?,?,?)";
-    public final String deleteById = "delete from product where product_id = ?" ;
+
     public final String findProductById = "select * from product p " +
             "inner join category c on c.category_id = p.category_id" +
             " inner join color c2 on c2.color_id = p.color_id where product_id = ?";
@@ -28,7 +28,6 @@ public class ProductDAO extends BaseDAO<Integer, Product> {
     @Override
     public List<Product> findAll() {
         List<Product> products = new ArrayList<>();
-
         try (ResultSet resultSet = connection.createStatement().executeQuery(findAllProducts)) {
             while (resultSet.next()) {
                 products.add(new Product(
@@ -81,14 +80,15 @@ public class ProductDAO extends BaseDAO<Integer, Product> {
     }
 
     @Override
-    public  void delete(Integer id) {
-        int idd = id;
+    public boolean delete(Integer id) {
+        boolean result = false ;
+        String deleteById = "delete from product where product_id = ?" ;
         try (PreparedStatement ps = connection.prepareStatement(deleteById)) {
-            ps.setInt(1, idd);
-            ps.execute();
+            ps.setInt(1, id);
+            result = ps.execute();
         } catch (SQLException e) {
             e.printStackTrace();
-        }
+        }return result;
     }
         @Override
     public boolean deleteEntity(Product entity) {
@@ -108,6 +108,7 @@ public class ProductDAO extends BaseDAO<Integer, Product> {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
     }
 
     @Override

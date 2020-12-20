@@ -1,19 +1,11 @@
-package controller.command;
+package lab3.controller.command;
 
-import model.service.ServiceFactory;
-import view.page.PageView;
+import lab3.view.page.PageView;
 
-public abstract class FrontCommand{
+public abstract class FrontCommand {
     protected PageView view;
-    protected ServiceFactory serviceFactory;
-    protected String request;
-
-    FrontCommand(PageView view,String request) {
-       this.view = view;
-       this.serviceFactory = ServiceFactory.getServiceFactory();
-       this.request = request;
+    FrontCommand(PageView view){
+        this.view = view;
     }
-
     abstract void execute();
-
 }

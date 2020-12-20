@@ -1,4 +1,4 @@
-package model.dto;
+package lab3.model.dto;
 
 public class LoginDTO {
     private String username;

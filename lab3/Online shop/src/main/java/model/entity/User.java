@@ -1,4 +1,4 @@
-package model.entity;
+package lab3.model.entity;
 
 import com.fasterxml.uuid.Generators;
 

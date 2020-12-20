@@ -1,25 +1,19 @@
-package model.service;
+package lab3.model.service;
 
-import exceptions.UnsupportedUsernameException;
-import model.dao.BaseDAO;
-import model.entity.User;
+import lab3.controller.exceptions.UnsupportedUsernameException;
+import lab3.model.dao.AbstractDAO;
+import lab3.model.entity.User;
 
 import java.sql.SQLException;
 import java.util.UUID;
 
-public class RegistrationService extends BaseService<String, User> {
+public class RegistrationService extends BaseService {
 
-    RegistrationService() {
-    }
-
-    @Override
-    public String performAction(User entity) throws SQLException {
-        BaseDAO<UUID, User> dao = null;
-
-            dao = daoFactory.createDAO("user");
-            if (dao.findEntityByName(entity.getUsername()) == null) {
-                dao.create(entity);
-                dao.close();
+    public String register(User user) throws SQLException {
+        AbstractDAO<UUID, User> dao = daoFactory.createDAO("user");
+            if (dao.findEntityByName(user.getUsername()) == null) {
+                dao.create(user);
+                dao.closeConnection();
             } else
                 throw new UnsupportedUsernameException("User with such username already exists");
 

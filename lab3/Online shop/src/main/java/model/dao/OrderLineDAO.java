@@ -1,12 +1,12 @@
-package model.dao;
-import model.entity.OrderLine;
+package lab3.model.dao;
+import lab3.model.entity.OrderLine;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
-public class OrderLineDAO extends BaseDAO<UUID, OrderLine> {
+public class OrderLineDAO extends AbstractDAO<UUID, OrderLine> {
     public OrderLineDAO() throws SQLException {
         connection = connectionPool.getConnection();
     }
@@ -34,8 +34,8 @@ public class OrderLineDAO extends BaseDAO<UUID, OrderLine> {
     }
 
     @Override
-    public void delete(UUID id) {
-
+    public boolean delete(UUID id) {
+return true;
     }
 
     @Override
@@ -59,6 +59,5 @@ public class OrderLineDAO extends BaseDAO<UUID, OrderLine> {
 
     @Override
     public void update(OrderLine entity) {
-
     }
 }

@@ -1,73 +1,99 @@
-package controller.command;
+package lab3.controller.command;
 
-import exceptions.WrongMenuItemException;
-import model.entity.Order;
-import model.entity.OrderLine;
-import model.entity.Product;
-import model.entity.UserSession;
-import model.service.BaseService;
-import view.page.PageView;
+import lab3.controller.exceptions.WrongInputException;
+import lab3.controller.exceptions.WrongMenuItemException;
+import lab3.model.entity.*;
+import lab3.model.service.OrderLineService;
+import lab3.model.service.OrderService;
+import lab3.model.service.ProductService;
+import lab3.model.service.exceptions.EmptyCatalogueException;
+import lab3.view.page.PageView;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class ShowCatalogueCommand extends FrontCommand {
-    BaseService<List<Product>,String> service ;
-    public ShowCatalogueCommand(PageView view, String request) {
-        super(view, request);
-        service = serviceFactory.createService(request);
+    private ProductService productService;
+    private OrderService orderService;
+    private OrderLineService orderLineService;
+
+    public ShowCatalogueCommand(PageView view) {
+        super(view);
+        this.productService = new ProductService();
+        this.orderService = new OrderService();
+        this.orderLineService = new OrderLineService();
     }
 
     @Override
     public void execute() {
+        if (UserSession.getUserSession().getRole().equals("user"))
+            createOrder();
+        else view.printData(getCatalogue(), view.catalogueColumns);
+    }
 
+    private List<Product> getCatalogue() {
         view.showCatalogueSortMenu();
-        String sortType = view.getSortType(5);
+        List<Product> products = null;
         try {
-                view.printData(service.performAction(sortType), view.catalogueColumns);
-        } catch (WrongMenuItemException e) {
+            products = productService.getProductList(view.getSortType(5));
+        } catch (WrongMenuItemException | EmptyCatalogueException e) {
             view.printErrorMessage(e.getMessage());
-        }catch (SQLException e){
+        } catch (SQLException e) {
             view.printErrorMessage(view.SYSTEM_ERROR);
         }
-        if(UserSession.getUserSession().getRole().equals("user")){
-                CreateOrder();
-        }
+        return products;
     }
 
-    private void CreateOrder()  {
-        int flag = 0;
-        List<OrderLine> orderLines = new ArrayList<>();
-        List<Product> products;
+    private void createOrder() {
         try {
-        products = service.performAction("0");
-        UUID orderId = UUID.randomUUID();
-        double totalCost = 0;
-        do {
-            int productId = view.getIntValue("\nEnter product № you want to add to order: ");
-            int amount = view.getIntValue("Enter amount of selected product:");
-            for (Product product:products) {
-                if(productId == product.getId()) {
-                    orderLines.add(new OrderLine(orderId, productId, amount, product.getPrice() * amount));
-                    totalCost += product.getPrice() * amount;
-                }
-            }
-            view.printData(products,view.catalogueColumns);
-             flag = view.getIntValue("1. Continue adding products\n2. Save order");
-        } while (flag != 2);
-
-        BaseService<String, Order> createOrderService = serviceFactory.createService("create order");
-        view.printMessage(createOrderService.performAction(new Order(orderId,UserSession.getUserSession().getUserId(),totalCost,"registered")));
-        BaseService<String,OrderLine> addOrderLineService = serviceFactory.createService("add orderLine");
-        for (OrderLine orderLine: orderLines) {
-            addOrderLineService.performAction(orderLine);
-        }}catch (SQLException e){
+            UUID orderId = UUID.randomUUID();
+            UUID userId = UserSession.getUserSession().getUserId();
+            orderService.addOrder(new Order(orderId, userId));
+            double totalCost = selectProducts(orderId);
+            if (totalCost != 0)
+                view.printMessage(orderService.addOrder(new Order(orderId, userId, totalCost)));
+            else
+                view.printErrorMessage(orderService.deleteOrder(new Order(orderId, userId, totalCost)));
+        } catch (SQLException e) {
             view.printErrorMessage(view.SYSTEM_ERROR);
         }
-
-
     }
 
+    private double selectProducts(UUID orderId) {
+        double totalCost = 0;
+        String flag = "";
+        do {
+            view.printData(getCatalogue(), view.catalogueColumns);
+            try {
+                totalCost = addProduct(orderId, totalCost);
+            } catch (WrongInputException e) {
+                view.printErrorMessage(e.getMessage());
+            }
+            flag = view.getRequest("Continue adding products? [y/n]");
+        } while (!flag.equalsIgnoreCase("n"));
+        return totalCost;
+    }
+
+    private double addProduct(UUID orderId, double cost) throws WrongInputException {
+      double price = 0;
+        try {
+            Product product = getProduct();
+            int amount = view.getIntValue("Enter amount of selected product:");
+            price = product.getPrice()*amount;
+            OrderLine line = new OrderLine(orderId, product.getId(), amount,price);
+            orderLineService.performAction(line);
+        }catch (EmptyCatalogueException  e){
+            view.printErrorMessage(e.getMessage());
+        }
+        catch (SQLException e) {
+            view.printErrorMessage(view.SYSTEM_ERROR);
+        }
+        return cost + price;
+    }
+
+    private Product getProduct() throws EmptyCatalogueException,SQLException {
+        int productId = view.getIntValue("\nEnter product № you want to add to order: ");
+        return productService.findProduct(productId);
+    }
 }

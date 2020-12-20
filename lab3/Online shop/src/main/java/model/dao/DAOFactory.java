@@ -1,6 +1,6 @@
-package model.dao;
+package lab3.model.dao;
 
-import exceptions.InvalidTypeException;
+import lab3.controller.exceptions.InvalidTypeException;
 
 import java.sql.SQLException;
 
@@ -20,7 +20,7 @@ public class DAOFactory {
         return daoFactory;
     }
 
-    public BaseDAO createDAO(String daoType) throws SQLException {
+    public AbstractDAO createDAO(String daoType) throws SQLException {
         switch (daoType) {
             case "user":
                 return new UserDAO();

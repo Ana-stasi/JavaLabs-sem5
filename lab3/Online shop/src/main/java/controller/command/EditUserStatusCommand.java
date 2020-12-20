@@ -1,34 +1,45 @@
-package controller.command;
+package lab3.controller.command;
 
-import exceptions.InvalidTypeException;
-import exceptions.NoSuchUserException;
-import model.entity.User;
-import model.service.BaseService;
-import view.page.PageView;
+import lab3.controller.exceptions.InvalidTypeException;
+import lab3.controller.exceptions.NoSuchUserException;
+import lab3.model.entity.User;
+import lab3.model.service.UserService;
+import lab3.model.service.exceptions.EmptyCatalogueException;
+import lab3.view.page.PageView;
 
 import java.sql.SQLException;
-import java.util.List;
 
 public class EditUserStatusCommand extends FrontCommand {
-    public EditUserStatusCommand(PageView view, String request) {
-        super(view, request);
+    private UserService  service;
+    public EditUserStatusCommand(PageView view) {
+        super(view);
+        this.service = new UserService();
     }
 
     @Override
     public void execute() {
         try {
-            BaseService<List<User>,String > showUsersService = serviceFactory.createService("show users");
-            BaseService<String, User> userStatusService = serviceFactory.createService(request);
-            view.printData(showUsersService.performAction(""),view.userColumns);
-            String username = view.getRequest("Type username:");
+            User user = getUser();
             String block = view.getBlockRequest();
             if(block.equals("block"))
-                view.printMessage(userStatusService.performAction(new User(username,false)));
-            else view.printMessage(userStatusService.performAction(new User(username,true)));
-        } catch(InvalidTypeException| NoSuchUserException e){
+                view.printMessage(service.editStatus(new User(user.getUsername(),false)));
+            else view.printMessage(service.editStatus(new User(user.getUsername(),true)));
+        } catch(InvalidTypeException| NoSuchUserException| EmptyCatalogueException e){
             view.printErrorMessage(e.getMessage());
         }catch (SQLException e){
             view.printErrorMessage(view.SYSTEM_ERROR);
         }
+    }
+
+    private User getUser() throws NoSuchUserException{
+        User user = null;
+        try {
+            view.printData(service.getUsers(),view.userColumns);
+            String username = view.getRequest("Type username:");
+            user = service.findByName(username);
+        } catch (SQLException e) {
+            view.printErrorMessage(view.SYSTEM_ERROR);
+        }
+       return user;
     }
 }

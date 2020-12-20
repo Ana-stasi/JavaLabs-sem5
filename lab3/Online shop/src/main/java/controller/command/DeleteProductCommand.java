@@ -1,32 +1,52 @@
-package controller.command;
+package lab3.controller.command;
 
-import exceptions.InvalidTypeException;
-import model.entity.Product;
-import model.service.BaseService;
-import view.page.PageView;
+import lab3.controller.exceptions.InvalidTypeException;
+import lab3.controller.exceptions.WrongMenuItemException;
+import lab3.model.entity.Product;
+import lab3.model.service.ProductService;
+import lab3.model.service.exceptions.EmptyCatalogueException;
+import lab3.view.page.PageView;
 
 import java.sql.SQLException;
 import java.util.List;
 
 
 public class DeleteProductCommand extends FrontCommand {
-    public DeleteProductCommand(PageView view, String request) {
-        super(view, request);
+    private ProductService service;
+
+    public DeleteProductCommand(PageView view) {
+        super(view);
+        this.service = new ProductService();
     }
 
     @Override
     public void execute() {
         try {
-            BaseService<String, Integer> deleteProductService = serviceFactory.createService(request);
-            BaseService<List<Product>, String> showProductsService = serviceFactory.createService("view catalogue");
-            List<Product> products = showProductsService.performAction("");
-            view.printData(products,view.catalogueColumns);
-            int productId = view.getIntValue("Input product №:");
-            view.printMessage(deleteProductService.performAction(productId));
-        }catch (InvalidTypeException e){
+            view.printData(getCatalogue(), view.catalogueColumns);
+            Product product = getProduct();
+            view.printMessage(service.deleteProduct(product.getId()));
+        } catch (InvalidTypeException | EmptyCatalogueException e) {
             view.printErrorMessage(e.getMessage());
-        }catch (SQLException e){
+        } catch (SQLException e) {
             view.printErrorMessage(view.SYSTEM_ERROR);
         }
+    }
+
+    private List<Product> getCatalogue() {
+        view.showCatalogueSortMenu();
+        List<Product> products = null;
+        try {
+            products = service.getProductList(view.getSortType(5));
+        } catch (WrongMenuItemException | EmptyCatalogueException e) {
+            view.printErrorMessage(e.getMessage());
+        } catch (SQLException e) {
+            view.printErrorMessage(view.SYSTEM_ERROR);
+        }
+        return products;
+    }
+
+    private Product getProduct() throws EmptyCatalogueException, SQLException {
+        int productId = view.getIntValue("\nEnter product № you want to remove: ");
+        return service.findProduct(productId);
     }
 }

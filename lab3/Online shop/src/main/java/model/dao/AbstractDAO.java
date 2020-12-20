@@ -1,16 +1,13 @@
-package model.dao;
+package lab3.model.dao;
 
+import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
 
-public interface AbstractDAO <K, E> {
-     List<E> findAll();
-     List<E>findAll(K parameter);
-     E findEntityById(K id);
-    E findEntityByName(String name) throws SQLException;
-    void delete(K id);
-     boolean deleteEntity(E entity);
-     void create(E entity) throws SQLException;
-     void update(E entity);
+public abstract class AbstractDAO<K,E> implements BaseDAO<K,E> {
+    protected ConnectionPool connectionPool = ConnectionPool.getConnectionPool();
+    protected Connection connection;
 
+public void closeConnection() throws SQLException {
+    connection.close();
+}
 }

@@ -1,6 +1,6 @@
-package model.dao;
+package lab3.model.dao;
 
-import model.entity.User;
+import lab3.model.entity.User;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class UserDAO extends BaseDAO<UUID, User> implements AbstractDAO<UUID, User> {
+public class UserDAO extends AbstractDAO<UUID, User> implements BaseDAO<UUID, User> {
 
     UserDAO() throws SQLException {
         connection = connectionPool.getConnection();
@@ -73,7 +73,8 @@ public class UserDAO extends BaseDAO<UUID, User> implements AbstractDAO<UUID, Us
     }
 
     @Override
-    public void delete(UUID id) {
+    public boolean delete(UUID id) {
+        return false;
     }
 
     @Override

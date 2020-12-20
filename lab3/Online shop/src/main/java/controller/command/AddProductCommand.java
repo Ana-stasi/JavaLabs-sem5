@@ -1,11 +1,14 @@
-package controller.command;
+package lab3.controller.command;
 
-import exceptions.InvalidTypeException;
-import model.entity.Category;
-import model.entity.Color;
-import model.entity.Product;
-import model.service.BaseService;
-import view.page.PageView;
+import lab3.controller.exceptions.InvalidTypeException;
+import lab3.model.entity.Category;
+import lab3.model.entity.Color;
+import lab3.model.entity.Product;
+import lab3.model.service.ProductService;
+import lab3.model.service.CategoryService;
+import lab3.model.service.ColorService;
+import lab3.model.service.exceptions.EmptyCatalogueException;
+import lab3.view.page.PageView;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -13,35 +16,56 @@ import java.util.List;
 
 public class AddProductCommand extends FrontCommand {
 
-    public AddProductCommand(PageView view, String request) {
-        super(view, request);
+    private CategoryService categoryService;
+    private ColorService colorService;
+    private ProductService productService;
+
+    public AddProductCommand(PageView view) {
+        super(view);
+        categoryService = new CategoryService();
+        colorService = new ColorService();
+        productService = new ProductService();
     }
 
     @Override
     public void execute() {
         try {
-            BaseService<List<Category>, String> categoryService = serviceFactory.createService("get categories");
-            List<Category> categories = categoryService.performAction("");
-
-            BaseService<List<Color>,String> colorService = serviceFactory.createService("get colors");
-            List<Color> colors = colorService.performAction("");
-
-            view.printData(categories,"\t№ \t\tcategory name");
-            int category = view.getValueByItem("Input category №:",categories.size());
-            String name = view.getRequest("Type product name:");
-            double price = view.getDouble("Type price:");
-            view.printData(colors,"\t№ \t\t color name");
-            int color = view.getValueByItem("Input color №:",colors.size());
-            double weight = view.getDouble("Type weight:");
-
-            BaseService<String,Product> addProductService = serviceFactory.createService(request);
-            Product product = new Product(new Category(category),name,price,new Color(color),weight);
-            view.printMessage(addProductService.performAction(product));
+          Product product = getProduct();
+            view.printMessage(productService.addProduct(product));
         }catch (InvalidTypeException e) {
             view.printErrorMessage(e.getMessage());
         }catch (SQLException e){
             view.printErrorMessage(view.SYSTEM_ERROR);
         }
+    }
+
+    private Product getProduct(){
+        Product product = null;
+        try {
+            Category category = getCategory();
+            String name = view.getRequest("Type product name:");
+            double price = view.getDouble("Type price:");
+            Color color = getColor();
+            double weight = view.getDouble("Type weight:");
+            product = new Product(category,name,price,color,weight);
+        }catch (EmptyCatalogueException e){
+            view.printErrorMessage(e.getMessage());
+        } catch (SQLException e){
+            view.printErrorMessage(view.SYSTEM_ERROR);
+        }
+        return product;
+    }
+
+    private Color getColor() throws EmptyCatalogueException,SQLException {
+            view.printData(colorService.getColors(),"\t№ \t\t color name");
+            int colorId = view.getIntValue("Input color №:");
+        return colorService.findColor(colorId);
+    }
+
+    private Category getCategory()throws EmptyCatalogueException,SQLException{
+        view.printData(categoryService.getCategories(),"\t№ \t\tcategory name");
+        int categoryId = view.getIntValue("Input category №:");
+        return categoryService.findCategory(categoryId);
     }
 
 }

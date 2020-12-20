@@ -1,4 +1,4 @@
-package model.entity;
+package lab3.model.entity;
 
 public class Color {
     private int id;

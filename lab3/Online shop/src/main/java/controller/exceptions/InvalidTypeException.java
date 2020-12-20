@@ -1,4 +1,4 @@
-package exceptions;
+package lab3.controller.exceptions;
 
 public class InvalidTypeException extends RuntimeException {
     public InvalidTypeException(){

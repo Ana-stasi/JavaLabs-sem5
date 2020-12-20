@@ -1,12 +1,12 @@
-package controller;
+package lab3.controller;
 
-import exceptions.BlockedUserException;
-import exceptions.WrongMenuItemException;
-import model.entity.User;
-import model.entity.UserSession;
-import view.page.*;
-
-import java.sql.SQLException;
+import lab3.controller.exceptions.BlockedUserException;
+import lab3.controller.exceptions.WrongMenuItemException;
+import lab3.model.entity.UserSession;
+import lab3.view.page.AdminPage;
+import lab3.view.page.PageView;
+import lab3.view.page.UnauthorizedUserPage;
+import lab3.view.page.UserPage;
 
 public class FrontController {
     public void run() {
@@ -20,7 +20,6 @@ public class FrontController {
                 new Dispatcher().executeCommand(request, view);
             } catch (WrongMenuItemException  | BlockedUserException e) {
                 view.printErrorMessage(e.getMessage());
-
             }
         }
     }

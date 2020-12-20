@@ -1,13 +1,14 @@
-package model.dao;
+package lab3.model.dao;
 
-import model.entity.Color;
+import lab3.model.entity.Color;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ColorDAO extends BaseDAO<Integer, Color> {
+public class ColorDAO extends AbstractDAO<Integer, Color> {
     static final String findAllColor ="select * from color";
     ColorDAO() throws SQLException {
         connection = connectionPool.getConnection();
@@ -35,7 +36,22 @@ public class ColorDAO extends BaseDAO<Integer, Color> {
 
     @Override
     public Color findEntityById(Integer id) {
-        return null;
+         String findColorById = "select * from color where color_id = ?";
+        Color color = null;
+        try (PreparedStatement ps = connection.prepareStatement(findColorById)) {
+            ps.setInt(1, id);
+            try(ResultSet resultSet = ps.executeQuery()) {
+                while (resultSet.next()) {
+                    color = new Color(
+                            resultSet.getInt("color_id"),
+                            resultSet.getString("color_name")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return color;
     }
 
     @Override
@@ -44,7 +60,8 @@ public class ColorDAO extends BaseDAO<Integer, Color> {
     }
 
     @Override
-    public void delete(Integer id) {
+    public boolean delete(Integer id) {
+        return true;
     }
 
     @Override
@@ -54,7 +71,6 @@ public class ColorDAO extends BaseDAO<Integer, Color> {
 
     @Override
     public void create(Color entity) throws SQLException {
-
     }
 
     @Override

@@ -1,0 +1,23 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="Online shop:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/Online_shop_war_exploded</output-path>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="Online shop" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="file-copy" path="$PROJECT_DIR$/../Desktop/КПИ/3 курс/Java/postgresql-42.2.5.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/../HikariCP-3.4.1.jar" />
+          <element id="library" level="project" name="Maven: com.rabbitmq:amqp-client:4.0.0" />
+          <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.21" />
+          <element id="library" level="project" name="Maven: org.apache.commons:commons-lang3:3.0" />
+          <element id="library" level="project" name="Maven: org.slf4j:slf4j-simple:1.7.21" />
+          <element id="library" level="project" name="Maven: com.fasterxml.uuid:java-uuid-generator:3.1.4" />
+          <element id="library" level="project" name="jstl-1.2" />
+        </element>
+      </element>
+      <element id="javaee-facet-resources" facet="Online shop/web/Web" />
+    </root>
+  </artifact>
+</component>
